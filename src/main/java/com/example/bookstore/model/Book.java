@@ -20,7 +20,7 @@ public class Book {
 
     private String title;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "book_isbn", nullable = false)
     private List<Author> authors;
 
