@@ -2,12 +2,14 @@ package com.example.bookstore.controller;
 
 import com.example.bookstore.dto.BookDto;
 import com.example.bookstore.exception.BookQueryFormatException;
+import com.example.bookstore.service.ExternalApiService;
 import com.example.bookstore.service.BookService;
 import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +19,11 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final ExternalApiService externalApiService;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, ExternalApiService externalApiService) {
         this.bookService = bookService;
+        this.externalApiService = externalApiService;
     }
 
     @GetMapping
@@ -56,5 +60,11 @@ public class BookController {
             security = @SecurityRequirement(name = "basicAuth"))
     public void removeBook(@PathVariable @NotBlank String isbn) {
         bookService.deleteBook(isbn);
+    }
+
+    @GetMapping("/test")
+    @Operation(summary = "External Test", description = "Test.")
+    public ResponseEntity<String> test() {
+        return externalApiService.call("http://localhost:8080/api/books?title=34");
     }
 }
